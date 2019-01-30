@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en-US">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>事件循环机制 | by的技术博客</title>
+    <meta name="description" content="just play around">
+    
+    
+    <link rel="preload" href="/assets/css/0.styles.dcae4551.css" as="style"><link rel="preload" href="/assets/js/app.adc5e9ca.js" as="script"><link rel="preload" href="/assets/js/3.2c2f464c.js" as="script"><link rel="prefetch" href="/assets/js/10.9a3755b9.js"><link rel="prefetch" href="/assets/js/11.d04aa466.js"><link rel="prefetch" href="/assets/js/12.fdf9daba.js"><link rel="prefetch" href="/assets/js/2.4b970a3d.js"><link rel="prefetch" href="/assets/js/4.51819f13.js"><link rel="prefetch" href="/assets/js/5.06f41a6d.js"><link rel="prefetch" href="/assets/js/6.23273029.js"><link rel="prefetch" href="/assets/js/7.7a4ec03c.js"><link rel="prefetch" href="/assets/js/8.f8b6b8e4.js"><link rel="prefetch" href="/assets/js/9.91f15648.js">
+    <link rel="stylesheet" href="/assets/css/0.styles.dcae4551.css">
+  </head>
+  <body>
+    <div id="app" data-server-rendered="true"><div class="theme-container"><header class="navbar"><div class="sidebar-button"><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="img" viewBox="0 0 448 512" class="icon"><path fill="currentColor" d="M436 124H12c-6.627 0-12-5.373-12-12V80c0-6.627 5.373-12 12-12h424c6.627 0 12 5.373 12 12v32c0 6.627-5.373 12-12 12zm0 160H12c-6.627 0-12-5.373-12-12v-32c0-6.627 5.373-12 12-12h424c6.627 0 12 5.373 12 12v32c0 6.627-5.373 12-12 12zm0 160H12c-6.627 0-12-5.373-12-12v-32c0-6.627 5.373-12 12-12h424c6.627 0 12 5.373 12 12v32c0 6.627-5.373 12-12 12z"></path></svg></div> <a href="/" class="home-link router-link-active"><!----> <span class="site-name">by的技术博客</span></a> <div class="links" style="max-width:nullpx;"><!----> <nav class="nav-links can-hide"><div class="nav-item"><a href="/js/eventLoop.html" class="nav-link router-link-exact-active router-link-active">JavaScript</a></div><div class="nav-item"><a href="/vue/" class="nav-link">Vue</a></div><div class="nav-item"><a href="/node/" class="nav-link">Node</a></div> <!----></nav></div></header> <div class="sidebar-mask"></div> <div class="sidebar"><nav class="nav-links"><div class="nav-item"><a href="/js/eventLoop.html" class="nav-link router-link-exact-active router-link-active">JavaScript</a></div><div class="nav-item"><a href="/vue/" class="nav-link">Vue</a></div><div class="nav-item"><a href="/node/" class="nav-link">Node</a></div> <!----></nav>  <ul class="sidebar-links"><li><a href="/js/eventLoop.html" class="active sidebar-link">事件循环机制</a><ul class="sidebar-sub-headers"><li class="sidebar-sub-header"><a href="/js/eventLoop.html#js单线程、异步、同步概念" class="sidebar-link">JS单线程、异步、同步概念</a></li><li class="sidebar-sub-header"><a href="/js/eventLoop.html#事件循环机制-2" class="sidebar-link">事件循环机制</a></li><li class="sidebar-sub-header"><a href="/js/eventLoop.html#任务队列" class="sidebar-link">任务队列</a></li><li class="sidebar-sub-header"><a href="/js/eventLoop.html#总结" class="sidebar-link">总结</a></li><li class="sidebar-sub-header"><a href="/js/eventLoop.html#例题" class="sidebar-link">例题</a></li></ul></li><li><a href="/js/promise.html" class="sidebar-link">Promise</a></li></ul> </div> <div class="page"> <div class="content"><h1 id="事件循环机制"><a href="#事件循环机制" aria-hidden="true" class="header-anchor">#</a> 事件循环机制</h1> <div class="tip custom-block"><p class="custom-block-title">TIP</p> <p>This is a tip</p></div> <h2 id="js单线程、异步、同步概念"><a href="#js单线程、异步、同步概念" aria-hidden="true" class="header-anchor">#</a> JS单线程、异步、同步概念</h2> <ul><li>众所周知，JS是单线程（如果一个线程删DOM，一个线程增DOM，浏览器傻逼了～所以只能单着了），虽然有webworker酱紫的多线程出现，但也是在主线程的控制下。webworker仅仅能进行计算任务，不能操作DOM，所以本质上还是单线程。</li> <li>单线程即任务是串行的，后一个任务需要等待前一个任务的执行，这就可能出现长时间的等待。但由于类似ajax网络请求、setTimeout时间延迟、DOM事件的用户交互等，这些任务并不消耗 CPU，是一种空等，资源浪费，因此出现了异步。通过将任务交给相应的异步模块去处理，主线程的效率大大提升，可以并行的去处理其他的操作。当异步处理完成，主线程空闲时，主线程读取相应的callback，进行后续的操作，最大程度的利用CPU。此时出现了同步执行和异步执行的概念，同步执行是主线程按照顺序，串行执行任务；异步执行就是cpu跳过等待，先处理后续的任务（CPU与网络模块、timer等并行进行任务）。由此产生了任务队列与事件循环，来协调主线程与异步模块之间的工作。</li></ul> <h2 id="事件循环机制-2"><a href="#事件循环机制-2" aria-hidden="true" class="header-anchor">#</a> 事件循环机制</h2> <p><img src="/assets/img/js_event_loop.ecb0cbd2.png" alt="事件循环示例图"></p> <ul><li>如上图为事件循环示例图（或JS运行机制图），流程如下：
+<ul><li>step1：主线程读取JS代码，此时为同步环境，形成相应的堆和执行栈；</li> <li>step2:  主线程遇到异步任务，指给对应的异步进程进行处理（WEB API）;</li> <li>step3:  异步进程处理完毕（Ajax返回、DOM事件处罚、Timer到等），将相应的异步任务推入任务队列；</li> <li>step4: 主线程执行完毕，查询任务队列，如果存在任务，则取出一个任务推入主线程处理（先进先出）；</li> <li>step5: 重复执行step2、3、4；称为事件循环。</li></ul></li> <li>执行的大意：
+<ul><li>同步环境执行(step1) -&gt; 事件循环1(step4) -&gt; 事件循环2(step4的重复)…</li></ul></li> <li>其中的异步进程有：
+<ul><li>a、类似onclick等，由浏览器内核的DOM binding模块处理，事件触发时，回调函数添加到任务队列中；</li> <li>b、setTimeout等，由浏览器内核的Timer模块处理，时间到达时，回调函数添加到任务队列中；</li> <li>c、Ajax，由浏览器内核的Network模块处理，网络请求返回后，添加到任务队列中。</li></ul></li></ul> <h2 id="任务队列"><a href="#任务队列" aria-hidden="true" class="header-anchor">#</a> 任务队列</h2> <p><strong>如上示意图，任务队列存在多个，同一任务队列内，按队列顺序被主线程取走；不同任务队列之间，存在着优先级，优先级高的优先获取（如用户I/O）</strong></p> <ul><li>任务队列的类型
+<ul><li>任务队列存在两种类型，一种为microtask queue，另一种为macrotask queue。</li> <li>图中所列出的任务队列均为macrotask queue，而ES6 的 promise［ECMAScript标准］产生的任务队列为microtask queue。</li></ul></li> <li>两者的区别
+<ul><li>microtask queue：唯一，整个事件循环当中，仅存在一个；执行为同步，同一个事件循环中的microtask会按队列顺序，串行执行完毕；</li> <li>macrotask queue：不唯一，存在一定的优先级（用户I/O部分优先级更高）；异步执行，同一事件循环中，只执行一个。</li></ul></li> <li>更完整的事件循环流程
+<ul><li>将microtask加入到JS运行机制流程中，则：
+<ul><li>step1、2、3同上，</li> <li>step4：主线程查询任务队列，执行microtask queue，将其按序执行，全部执行完毕；</li> <li>step5：主线程查询任务队列，执行macrotask queue，取队首任务执行，执行完毕；</li> <li>step6：重复step4、step5。</li></ul></li> <li>microtask queue中的所有callback处在同一个事件循环中，而macrotask queue中的callback有自己的事件循环。</li> <li>简而言之：同步环境执行 -&gt; 事件循环1（microtask queue的All）-&gt; 事件循环2(macrotask queue中的一个) -&gt; 事件循环1（microtask queue的All）-&gt; 事件循环2(macrotask queue中的一个)...</li> <li>利用microtask queue可以形成一个同步执行的环境，但如果Microtask queue太长，将导致Macrotask任务长时间执行不了，最终导致用户I/O无响应等，所以使用需慎重。</li></ul></li></ul> <h2 id="总结"><a href="#总结" aria-hidden="true" class="header-anchor">#</a> 总结</h2> <ul><li>核心概念：主线程、异步进程、异步队列</li> <li>执行主线程，遇到异步任务交由异步进程处理，主线程继续执行</li> <li>异步进程执行完毕，异步任务并不会立即执行，而是会被推入到异步队列中，异步队列分为microtask和macrotask
+<ul><li>microtask：包含了process.nextTick、Promise、Object.observe、MutationObserver等</li> <li>macrotask：包含了setTimeout、setInterval、setImmediate、requestAnimationFrame、I/O、UIrendering</li> <li>microtask优先级高于macrotask</li></ul></li> <li>当主线程清空是，会将异步队列中的第一个异步任务推入到主线程中执行，然后重复上述操作</li></ul> <h2 id="例题"><a href="#例题" aria-hidden="true" class="header-anchor">#</a> 例题</h2> <div class="language- extra-class"><pre class="language-text"><code>console.log('1, time = ' + new Date().toString())
+setTimeout(macroCallback, 0);
+new Promise(function(resolve, reject) {
+    console.log('2, time = ' + new Date().toString())
+    resolve();
+    console.log('3, time = ' + new Date().toString())
+}).then(microCallback);
+
+function macroCallback() {
+    console.log('4, time = ' + new Date().toString())
+} 
+
+function microCallback() {
+    console.log('5, time = ' + new Date().toString())
+} 
+// 1 2 3 5 4</code></pre></div></div> <div class="page-edit"><!----> <!----></div> <div class="page-nav"><p class="inner"><!----> <span class="next"><a href="/js/promise.html">
+          Promise
+        </a>
+        →
+      </span></p></div> </div> <!----></div></div>
+    <script src="/assets/js/app.adc5e9ca.js" defer></script><script src="/assets/js/3.2c2f464c.js" defer></script>
+  </body>
+</html>

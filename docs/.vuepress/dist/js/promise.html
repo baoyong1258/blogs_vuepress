@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en-US">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Promise | by的技术博客</title>
+    <meta name="description" content="just play around">
+    
+    
+    <link rel="preload" href="/assets/css/0.styles.dcae4551.css" as="style"><link rel="preload" href="/assets/js/app.adc5e9ca.js" as="script"><link rel="preload" href="/assets/js/5.06f41a6d.js" as="script"><link rel="prefetch" href="/assets/js/10.9a3755b9.js"><link rel="prefetch" href="/assets/js/11.d04aa466.js"><link rel="prefetch" href="/assets/js/12.fdf9daba.js"><link rel="prefetch" href="/assets/js/2.4b970a3d.js"><link rel="prefetch" href="/assets/js/3.2c2f464c.js"><link rel="prefetch" href="/assets/js/4.51819f13.js"><link rel="prefetch" href="/assets/js/6.23273029.js"><link rel="prefetch" href="/assets/js/7.7a4ec03c.js"><link rel="prefetch" href="/assets/js/8.f8b6b8e4.js"><link rel="prefetch" href="/assets/js/9.91f15648.js">
+    <link rel="stylesheet" href="/assets/css/0.styles.dcae4551.css">
+  </head>
+  <body>
+    <div id="app" data-server-rendered="true"><div class="theme-container"><header class="navbar"><div class="sidebar-button"><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="img" viewBox="0 0 448 512" class="icon"><path fill="currentColor" d="M436 124H12c-6.627 0-12-5.373-12-12V80c0-6.627 5.373-12 12-12h424c6.627 0 12 5.373 12 12v32c0 6.627-5.373 12-12 12zm0 160H12c-6.627 0-12-5.373-12-12v-32c0-6.627 5.373-12 12-12h424c6.627 0 12 5.373 12 12v32c0 6.627-5.373 12-12 12zm0 160H12c-6.627 0-12-5.373-12-12v-32c0-6.627 5.373-12 12-12h424c6.627 0 12 5.373 12 12v32c0 6.627-5.373 12-12 12z"></path></svg></div> <a href="/" class="home-link router-link-active"><!----> <span class="site-name">by的技术博客</span></a> <div class="links" style="max-width:nullpx;"><!----> <nav class="nav-links can-hide"><div class="nav-item"><a href="/js/eventLoop.html" class="nav-link">JavaScript</a></div><div class="nav-item"><a href="/vue/" class="nav-link">Vue</a></div><div class="nav-item"><a href="/node/" class="nav-link">Node</a></div> <!----></nav></div></header> <div class="sidebar-mask"></div> <div class="sidebar"><nav class="nav-links"><div class="nav-item"><a href="/js/eventLoop.html" class="nav-link">JavaScript</a></div><div class="nav-item"><a href="/vue/" class="nav-link">Vue</a></div><div class="nav-item"><a href="/node/" class="nav-link">Node</a></div> <!----></nav>  <ul class="sidebar-links"><li><a href="/js/eventLoop.html" class="sidebar-link">事件循环机制</a></li><li><a href="/js/promise.html" class="active sidebar-link">Promise</a><ul class="sidebar-sub-headers"><li class="sidebar-sub-header"><a href="/js/promise.html#常见-promise-面试题" class="sidebar-link">常见 Promise 面试题</a></li><li class="sidebar-sub-header"><a href="/js/promise.html#promise的错误处理机制" class="sidebar-link">Promise的错误处理机制</a></li><li class="sidebar-sub-header"><a href="/js/promise.html#promsie-与事件循环" class="sidebar-link">Promsie 与事件循环</a></li><li class="sidebar-sub-header"><a href="/js/promise.html#promise-简单实现" class="sidebar-link">Promise 简单实现</a></li></ul></li></ul> </div> <div class="page"> <div class="content"><h1 id="promise"><a href="#promise" aria-hidden="true" class="header-anchor">#</a> Promise</h1> <h2 id="常见-promise-面试题"><a href="#常见-promise-面试题" aria-hidden="true" class="header-anchor">#</a> 常见 Promise 面试题</h2> <p>我们看一些 Promise 的常见面试问法，由浅至深。</p> <ol><li>了解 Promise 吗？</li> <li>Promise 解决的痛点是什么？</li> <li>Promise 解决的痛点还有其他方法可以解决吗？如果有，请列举。</li> <li>Promise 如何使用？</li> <li>Promise 常用的方法有哪些？它们的作用是什么？</li> <li>Promise 在事件循环中的执行过程是怎样的？</li> <li>Promise 的业界实现都有哪些？</li> <li>能不能手写一个 Promise 的 polyfill。</li></ol> <h2 id="promise的错误处理机制"><a href="#promise的错误处理机制" aria-hidden="true" class="header-anchor">#</a> Promise的错误处理机制</h2> <ul><li>promise中抛出错误 throw new Error('test') 等同于 reject('test')</li> <li>Promise 内部的错误不会影响到 Promise 外部的代码</li> <li>catch方法返回的还是一个 Promise对象，因此后面还可以接着调用then方法</li></ul> <h2 id="promsie-与事件循环"><a href="#promsie-与事件循环" aria-hidden="true" class="header-anchor">#</a> Promsie 与事件循环</h2> <p>Promise在初始化时，传入的函数是同步执行的，然后注册 then 回调。注册完之后，继续往下执行同步代码，在这之前，then 中回调不会执行。同步代码块执行完毕后，才会在事件循环中检测是否有可用的 promise 回调，如果有，那么执行，如果没有，继续下一个事件循环。</p> <h2 id="promise-简单实现"><a href="#promise-简单实现" aria-hidden="true" class="header-anchor">#</a> Promise 简单实现</h2> <ul><li>promise内部有pending、fulfilled、rejected这三种状态，并且只能从pending到fulfilled/rejected，状态一旦改变无法更改；</li> <li>内置resolve、reject方法的作用
+<ul><li>改变状态</li> <li>记录value或者reason</li> <li>触发发布/订阅模式</li></ul></li> <li>对于then方法的要求
+<ul><li>返回一个新的promise用于链式编程</li> <li>异步执行传入的fufillFn, rejectFn回调函数</li> <li>如果promise实例对象的状态为pending，则启用发布/订阅模式，将回调函数push</li> <li>fufillFn回调函数的返回值既可以是普通值也可以是一个promise，当为promise时，这个返回值promise的状态决定了promise.then()这个新promise的状态</li></ul></li></ul> <div class="language- extra-class"><pre class="language-text"><code> function isPromise(res) {
+      return (typeof res === 'object' &amp;&amp; typeof res.then === 'function') ? true : false;
+    };
+    class myPromise{
+        constructor(cb){
+            this.state = 'pending';
+            this.value = '';
+            this.reason = '';
+            this.resolveCallback = [];
+            this.rejectCallback = [];
+            const resolve = (value) =&gt; {
+              if(this.state === 'pending'){
+                  this.value = value;
+                  this.state = 'fufilled';
+                  this.resolveCallback.forEach(fn =&gt; fn());
+              }
+            };
+            const reject = (reason) =&gt; {
+              if(this.state === 'pending'){
+                  this.reason = reason;
+                  this.state = 'rejected';
+                  this.rejectCallback.forEach(fn =&gt; fn());
+              }
+            };
+            cb(resolve, reject);
+        }
+        then(fufillFn, rejectFn){
+            fufillFn = typeof fufillFn === 'function' ? fufillFn : val =&gt; val;
+            rejectFn = typeof rejectFn === 'function' ? rejectFn : err =&gt; { throw err};
+            let promise2 = new myPromise((resolve, reject) =&gt; {
+                // 这里的this代表调用then这个方法的promise实例对象而不是promise2
+                // 以下步骤本质上做两件事：调用fufillFn/rejectFn;改变promise2的状态
+                if(this.state === 'fufilled'){
+                    setTimeout(() =&gt; {
+                      let x = fufillFn(this.value);
+                      // 判断x是否为promise再采取相应措施
+                      if(isPromise(x)){
+                        x.then(y =&gt; resolve(y), err =&gt; reject(err));
+                      }else {
+                        resolve(x);
+                      }
+                    }, 0);
+                }else if(this.state === 'rejected'){
+                    setTimeout(() =&gt; {
+                      let x = rejectFn(this.reason);
+                      reject(x);
+                    }, 0);
+                }else if(this.state === 'pending'){
+                    setTimeout(() =&gt; {
+                      this.resolveCallback.push(() =&gt; {
+                        let x = fufillFn(this.value);
+                        // 判断x是否为promise再采取相应措施
+                        if(isPromise(x)){
+                          x.then(y =&gt; resolve(y), err =&gt; reject(err));
+                        }else {
+                          resolve(x);
+                        }
+                      });
+                      this.rejectCallback.push(() =&gt; {
+                        let x = rejectFn(this.reason);
+                        reject(x);
+                      })
+                    }, 0);
+                }
+            });
+            return promise2;
+        }
+    };
+    myPromise.resolve = function (val) {
+      return new myPromise((resolve, reject) =&gt; {
+          resolve(value);
+      })
+    };
+    myPromise.reject = function (reason) {
+      return new myPromise((resolve, reject) =&gt; {
+          reject(reason);
+      })
+    };
+    myPromise.race = function (promises) {
+      return new myPromise((resolve, reject) =&gt; {
+          for(let i = 0, len = promises.length; i &lt; len; i++){
+              promises[i].then(res =&gt; resolve(res), err =&gt; reject(err));
+          }
+      })
+    };
+    myPromise.all = function (promises) {
+      let num = 0, len = promises.length, resArr = [];
+      return new myPromise((resolve, reject) =&gt; {
+        for(let i = 0; i &lt; len; i++){
+          promises[i].then(res =&gt; {
+              resArr[i] = res;
+              num ++;
+              if(num === len){
+                  resolve(resArr);
+              }
+          }, err =&gt; reject(err));
+        }
+      })
+    };
+    let p2 = new myPromise((resolve, reject) =&gt; {
+        setTimeout(() =&gt; {resolve('p2...')}, 1000);
+    });
+    let p3 = new myPromise((resolve, reject) =&gt; {
+        setTimeout(() =&gt; {resolve('p3...')}, 3000);
+    });
+    let p1 = new myPromise((resolve, reject) =&gt; {
+      console.log('entry...');
+      resolve('my promise');
+    });
+    console.log('test resolve...');
+    p1
+      .then(res =&gt; {
+        console.log(res);
+        return new myPromise((resolve, reject) =&gt; {
+          setTimeout(() =&gt; {
+            resolve('then2......')
+          }, 2000);
+        })
+      })
+      .then(res =&gt; {
+        console.log(res);
+      });
+    myPromise.all([p2,p3]).then(res =&gt; {
+        console.log(res);
+    });
+</code></pre></div></div> <div class="page-edit"><!----> <!----></div> <div class="page-nav"><p class="inner"><span class="prev">
+        ←
+        <a href="/js/eventLoop.html" class="prev">
+          事件循环机制
+        </a></span> <!----></p></div> </div> <!----></div></div>
+    <script src="/assets/js/app.adc5e9ca.js" defer></script><script src="/assets/js/5.06f41a6d.js" defer></script>
+  </body>
+</html>
